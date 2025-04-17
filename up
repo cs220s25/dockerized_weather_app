@@ -1,3 +1,15 @@
+# Make sure both .env files exist
+if [ ! -f collector/collector.env ]; then
+  echo "collector/collector.env does not exist. Exiting."
+  exit 1
+fi
+
+if [ ! -f server/server.env ]; then
+  echo "server/server.env does not exist. Exiting."
+  exit 1
+fi
+
+
 # launch redis first because the other containers depend it
 docker run -d --network weather --name redisdb -p 6379:6379 -v $(pwd)/data:/data redis redis-server --save 10 1
 docker run -d --network weather --name collector -v $(pwd)/collector/collector.env:/app/.env  collector

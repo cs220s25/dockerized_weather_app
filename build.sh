@@ -1,24 +1,12 @@
 #!/bin/bash
 
-# if collector/collector.env does not exist, error out
-if [ ! -f collector/collector.env ]; then
-  echo "collector/collector.env does not exist. Exiting."
-  exit 1
-fi
+# Build both containers.  If there are no changes, this will be fast.
+docker build -t collector collector
+docker build -t server server
 
-if [ ! -f server/server.env ]; then
-  echo "server/server.env does not exist. Exiting."
-  exit 1
-fi
-
-if ! docker image inspect collector > /dev/null 2>&1; then
-  docker build -t collector collector
-fi
-
-if ! docker image inspect server > /dev/null 2>&1; then
-  docker build -t server server
-fi
-
+# It is an error to make the network if it already exists.
 if ! docker network inspect weather > /dev/null 2>&1; then
   docker network create weather
+else
+  echo "Network 'weather' already exists."
 fi
